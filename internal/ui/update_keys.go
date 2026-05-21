@@ -2,6 +2,7 @@ package ui
 
 import (
 	"math/rand"
+	"path/filepath"
 	"strings"
 
 	"github.com/MattiaPun/SubTUI/v2/internal/api"
@@ -1414,6 +1415,13 @@ func mediaCreateShare(m model) tea.Cmd {
 func toggleNotifications(m model) model {
 	if m.focus != focusSearch {
 		m.notify = !m.notify
+
+		// Persist the notification preference to config.toml
+		api.AppConfig.App.Notifications = m.notify
+		configPath := filepath.Join(api.ConfigDir, "config.toml")
+		go func() {
+			_ = api.SaveConfig(configPath, api.AppConfig, 0644)
+		}()
 	}
 
 	return m
