@@ -37,7 +37,6 @@ func (ins *DiscordInstance) UpdateActivity(meta Metadata) {
 		Details:    meta.Title,
 		State:      meta.Artist + " - " + meta.Album,
 		LargeImage: meta.ImageURL,
-		LargeText:  meta.Album,
 		Type:       2, // Listening
 		Timestamps: &client.Timestamps{
 			Start: &start,
