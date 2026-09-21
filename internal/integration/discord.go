@@ -45,3 +45,10 @@ func (ins *DiscordInstance) UpdateActivity(meta Metadata) {
 		log.Printf("[Discord] Update error: %v", err)
 	}
 }
+
+func (ins *DiscordInstance) StopActivity() {
+	err := client.SetActivity(client.Activity{})
+	if err != nil {
+		log.Printf("[Discord] Stop error: %v", err)
+	}
+}
