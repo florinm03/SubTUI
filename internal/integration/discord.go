@@ -1,10 +1,13 @@
 package integration
 
 import (
+	"encoding/json"
 	"log"
+	"os"
 	"time"
 
 	"github.com/babycommando/rich-go/client"
+	"github.com/babycommando/rich-go/ipc"
 )
 
 type DiscordInstance struct {
@@ -47,8 +50,27 @@ func (ins *DiscordInstance) UpdateActivity(meta Metadata) {
 }
 
 func (ins *DiscordInstance) StopActivity() {
-	err := client.SetActivity(client.Activity{})
-	if err != nil {
-		log.Printf("[Discord] Stop error: %v", err)
+	if ins == nil || !ins.Connected {
+		return
 	}
+
+	payload := struct {
+		Cmd  string `json:"cmd"`
+		Args struct {
+			PID int `json:"pid"`
+		} `json:"args"`
+		Nonce string `json:"nonce"`
+	}{
+		Cmd:   "SET_ACTIVITY",
+		Nonce: "subtui-clear-activity",
+	}
+	payload.Args.PID = os.Getpid()
+
+	data, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("[Discord] Could not clear activity: %v", err)
+		return
+	}
+
+	_ = ipc.Send(1, string(data))
 }
